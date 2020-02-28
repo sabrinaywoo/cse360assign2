@@ -1,10 +1,32 @@
-/**
+/*
  *Name: Sabrina Woo
  *Class ID: 422
- *Assignment 1
- *Description: Simple List class can add remove or 
- *					search an integer
-**/
+ *Assignment 2
+ *Description: SimpleList.java can add, remove, or search an integer in an array of integers
+ *			It is one class with two variables, an integer array and count.
+*/
+
+import java.lang.Math.*;
+//package cse360assign2;
+
+/**
+ * 
+ * @author sabrinaywoo
+ * The class SimpleList contains two variables - int[] list and int count.
+ * The following methods are available:
+ * 		+SimpleList()
+ * 		+getList(): int []
+ * 		+add(int): void
+ * 		+remove(int): void
+ * 		+toString(): String
+ * 		+search(): int
+ * 		+append(): void
+ * 		+first(): int
+ * 		+last(): int
+ *		+count(): int
+ * 		+size(): int
+ */
+
 
 public class SimpleList {
 
@@ -27,51 +49,79 @@ public int [] getList()
 //add a new int to array at index 0
 public void add (int newInt)
 {
-	if (count  == 0)
+	//if list is empty then add an integer		
+	if (count == 0)
 	{
 		list[0] = newInt;
 		count++;
 	}
+	//check if list is full
+	else if (count == list.length)
+	{
+		//new array increases size by 50%
+		int increasedSize = (int)(Math.floor(list.length * 1.5));
+		int [] tempArray = new int [increasedSize];
+		
+		//copy original list elements into new array
+		for (int copy = 0; copy < list.length; copy++)
+		{
+			tempArray[copy] = list[copy];
+		}
+		list = tempArray;
+		add(newInt);
+	}
+	//add a new int
 	else
 	{
+		//shift integers to the right
 		for (int index = list.length - 1; index > 0; index --)
 		{
 			list[index] = list [index - 1]; 
 		}
+		//add int at beginning of the list and increment count
 		list[0] = newInt;
 		count++;
 	}
 
 }
 
+/** 
+This method removes a specified int and moves the remaining elements down.
+If the list has more than 25% empty places it decreases the size of the list.
+The list cannot be reduced to less than 1 entry.
+@param a specific integer to remove from the list
+**/
 public void remove (int target)
 {
-	int secondIndex, firstIndex;
-	for (firstIndex = 0; firstIndex < list.length; firstIndex ++)
+	//list search variables
+	int targetIndex = this.search(target);
+	
+	//75% size of list, rounded down
+	int reducedSize = (int)(Math.floor(list.length * 0.75));
+
+	//there is an actual value at the first occurrence in the list to be removed
+	if (targetIndex != -1)
 	{
-		if (list[firstIndex] == target)
-		{
-			if(list[list.length-1] == target)
-			{
-				list[list.length-1] = 0;
-				//reduce count since a number was removed
-				count --;
-			}
-			else
-			{
-				//for loop shifts all numbers down from the removed index
-				for (secondIndex = firstIndex; secondIndex < list.length - 1; secondIndex ++)
-				{
-					list[secondIndex] = list[secondIndex + 1];
-				}
-				//reduce count since a number was removed
-				count --;
-				//last index will always be zero if a number was removed
-				list[list.length - 1] = 0;	
-			}
-			
-		}
+		for(int index = targetIndex; index < list.length - 1; index++) 
+			list[index] = list[index + 1];
+		count--;
 	}
+	
+
+	//reduce array size if over 25% of list is empty
+	if (count <= reducedSize && count >= 1)
+	{
+		//new array with smaller size
+		int [] tempArray = new int [reducedSize];
+		
+		//copy original list elements into new array
+		for (int copy = 0; copy < count; copy++)
+		{
+			tempArray[copy] = list[copy];
+		}
+		list = tempArray;
+	}
+	
 }
 
 public int count ()
@@ -79,27 +129,47 @@ public int count ()
 	return count;
 }
 
+/** 
+This method converts the array to a string and the elements are separated by a space
+**/
 public String toString()
 {
-	String finalString = "", tempString = "";
-
-	for(int index = 1; index < list.length; index++)
+	String finalString, tempString = "";
+	if(count == 0)
 	{
-		tempString += " " + String.valueOf(list[index]);
+		finalString = "";
 	}
-	
-	finalString = String.valueOf(list[0])+ tempString;
+	else
+	{
+		//for loop copies array and converts to String, excluding the first value
+		for(int index = 1; index < count; index++)
+		{
+			tempString += " " + String.valueOf(list[index]);
+		}
+		//converts the first value to string and append the rest
+		finalString = String.valueOf(list[0])+ tempString;
+	}
 	return finalString;
 }
 
+/** 
+This method return the location of the parameter in the list. If the parameter is not in the list, then it returns -1.
+@param the target integer to be found
+@return the index of the target integer
+**/
 public int search(int target)
 {
 	int found = -1;
-	
+	boolean flag = false;
+	//searches for integer in the array
 	for (int index = 0; index < list.length ; index++)
 	{
-		if (list[index] == target)
+		if (list[index] == target && flag == false)
+		{
 			found = index;
+			flag = true;
+		}
+			
 	}
 	
 	return found;
